@@ -28,6 +28,7 @@
     "mongoose": "^7.4.2",
     "nodemailer": "^6.9.4",
     "nodemon": "^2.0.22",
+    "speakeasy": "^2.0.0",
     "ts-node": "^10.9.1",
     "twilio": "^4.14.1",
     "uuid": "^9.0.0",

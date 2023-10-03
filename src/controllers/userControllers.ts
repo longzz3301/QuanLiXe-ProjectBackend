@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import userModel from "../models/usermodel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+const crypto = require('crypto');
 
 var nodemailer =  require('nodemailer')
 
@@ -104,54 +105,86 @@ const Login = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-// const ResetPassword = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const { email } = req.body;
-//   const checkUser = await userModel.findOne({ email: email });
-//   if (!checkUser) {
-//     throw new Error("Invalid or expired password reset token");
-//   }
-
-  // const link = `${clientURL}/passwordReset?token=${resetToken}&id=${user._id}`;
-  // sendEmail(user.email,"Password Reset Request",{name: user.name,link: link,},"./template/requestResetPassword.handlebars");
-  // return link;
 
 
+ const ForgotPassword = async (
+   req: Request,
+   res: Response,
+   next: NextFunction
+ ) => {
+  const EMAIL_ADDRESS = 'duylonggz@gmail.com';
+  const EMAIL_PASSWORD = 'long3301';
+  
+
+    
+    const {email} = req.body
+    const checkEmail = await userModel.findOne({email:email})
+    if (!checkEmail) {
+      res.send('user does not exits')
+    }else {
+      const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+          user: "EMAIL_ADDRESS",
+          pass: "EMAIL_PASSWORD",
+        },
+
+        
+      });
+      function generateOTP() {
+        
+        const otp = crypto.randomBytes(3).toString('hex').toUpperCase();
+
+        console.log('OTP:', otp);
+
+        return otp
+        
+            
+        // setTimeout(() => {
+        //   console.log('OTP đã hết hạn sau 60 giây.');
+        //   generateOTP(); 
+        // }, 60000); 
+      }
+      
+      
+      
+      const otp = generateOTP()
+
+      const saveOtp = await userModel.findOneAndUpdate({email:email } , {otp:otp})
+      
 
 
-// khai báo sử dụng module nodemailer
+       const mailOptions = {
+         from: EMAIL_ADDRESS,
+         to: email,
+         subject: 'OTP Verification',
+         text: `Your OTP is: ${otp}`,
+       };
+
+      
+       await  transporter.sendMail(mailOptions)
+      res.send("success")
+    ;
+      
+    }
+ }
+
 const ResetPassword = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-      var transporter =  nodemailer.createTransport({ // config mail server
-          service: 'Gmail',
-          auth: {
-              user: 'long1@gmail.com@gmail.com',
-              pass: '123'
-          }
-      });
-      var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
-          from: 'Thanh Batmon',
-          to: 'tomail@gmail.com',
-          subject: 'Test Nodemailer',
-          text: 'You recieved message from ' + req.body.email,
-          html: '<p>You have got a new message</b><ul><li>Username:' + req.body.name + '</li><li>Email:' + req.body.email + '</li><li>Username:' + req.body.message + '</li></ul>'
-      }
-      transporter.sendMail(mainOptions, function(error:any, info : any){
-          if (error) {
-              console.log(error);
-              res.redirect('/');
-          } else {
-              console.log('Message sent: ' +  info.response);
-              res.redirect('/');
-          }
-      });
-  };
+  const {otp, password} = req.body
+  const salt = bcrypt.genSaltSync(8);
+  const hassPassword = bcrypt.hashSync(password, salt);
+  const checkOtp = await userModel.findOne({otp:otp})
+  console.log("checkOtp", checkOtp)
+  if (otp) {
+     
+    const ResetPassword =await userModel.findOneAndUpdate({otp:otp} , {password:hassPassword})
+  }
+  res.send('oke')
+}
 
 
    
@@ -165,4 +198,4 @@ const ResetPassword = async (
 
 
 // export default CreateAccount;
-export { CreateAccount, Login , ResetPassword };
+export { CreateAccount, Login , ResetPassword , ForgotPassword};

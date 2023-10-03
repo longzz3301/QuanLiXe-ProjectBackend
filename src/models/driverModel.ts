@@ -11,6 +11,7 @@ const DriverSchema = new mongoose.Schema({
   cars_template: String,
   phone: String,
   email: String,
+  image : Buffer
   
   
 });

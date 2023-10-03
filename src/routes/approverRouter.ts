@@ -4,10 +4,16 @@ import {
   AppovedForm,
   CancelForm,
   GetHistoryApprover,
+  GetListFormApproved,
+  GetListFormCancel,
+
   GetlistFormWait,
+
+  GetlistFormWaitbyDay,
   UpdateDistanceForm
   
 } from "../controllers/approverControllers";
+// import { StacticsDriver } from "../controllers/operatorControllers";
 
 const ApproverRoute = express.Router();
 
@@ -31,6 +37,14 @@ ApproverRoute.patch(
 // );
 
 ApproverRoute.get(
+  "/getForm",
+  CheckToken,
+  CheckRoleApprover,
+  GetHistoryApprover
+);
+
+
+ApproverRoute.get(
   "/getFormForApprover",
   CheckToken,
   CheckRoleApprover,
@@ -38,11 +52,35 @@ ApproverRoute.get(
 );
 
 ApproverRoute.get(
+  "/GetListFormCancelApprover",
+  CheckToken,
+  CheckRoleApprover,
+  GetListFormCancel
+);
+
+ApproverRoute.get(
+  "/ListFormApproved",
+  CheckToken,
+  CheckRoleApprover,
+  GetListFormApproved
+);
+
+ApproverRoute.post(
   "/getListFormWait",
+  CheckToken,
+  CheckRoleApprover,
+  GetlistFormWaitbyDay
+);
+
+ApproverRoute.get(
+  "/WaitForm",
   CheckToken,
   CheckRoleApprover,
   GetlistFormWait
 );
+
+
+
 
 ApproverRoute.put('/updateDistanceForm/:id' , CheckToken, CheckRoleApprover ,UpdateDistanceForm )
 

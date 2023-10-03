@@ -5,6 +5,7 @@ import { RequestMiddleware } from "../global/interface";
 import { LocationService } from "../utils/aws.location";
 import userModel from "../models/usermodel";
 import moment from "moment";
+import DriverModel from "../models/driverModel";
 
 const BookingCar = async (
   req: RequestMiddleware,
@@ -36,6 +37,25 @@ const BookingCar = async (
   res.send(createForm);
 };
 
+const getBookedForm = async (
+  req: RequestMiddleware,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.userId
+
+  const condition: any = {
+    userId:userId ,
+    status: FormStatus.BOOKED
+  }
+  const getListBooked = await bookingFormModel.find(condition)
+
+  res.send({
+    total : getListBooked.length,
+    data: getListBooked
+  })
+}
+
 const getFormByDay = async (
   req: RequestMiddleware,
   res: Response,
@@ -63,6 +83,58 @@ const getFormByDay = async (
     }
     if (req.body.end) {
       condition.end_time = {
+        $lt: new Date(req.body.end),
+      };
+    }
+
+    const listWaitByDay = await bookingFormModel.find(condition);
+    // if (listWaitByDay === null) {
+    //   const condition: any = {
+    //     userId: userId,
+    //     status: FormStatus.WAIT,
+    //   };
+    //   const getWaitingForm = await bookingFormModel.find(condition);
+
+    res.send({
+      total: listWaitByDay.length,
+      data: listWaitByDay,
+    });
+    // } else {
+    //   res.send(listWaitByDay);
+    // }
+  } catch (error) {
+    console.log("ERR: ", error);
+    res.send(error);
+  }
+};
+
+const getFormByDateCreateForm = async (
+  req: RequestMiddleware,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.userId;
+    // {
+    //   status: FormStatus.WAIT.toString(),
+    //   start_time: {
+    //     $gt: new Date(req.body.start),
+    //   },
+    //   end_time: {
+    //     $lt: new Date(req.body.end),
+    //   },
+    // }
+    const condition: any = {
+      userId: userId,
+      status: FormStatus.WAIT,
+    };
+    if (req.body.start ) {
+      condition.create_at = {
+        $gt: new Date(req.body.start),
+      };
+    }
+    if (req.body.end) {
+      condition.create_at = {
         $lt: new Date(req.body.end),
       };
     }
@@ -189,6 +261,32 @@ const GetBookedForm = async (
   });
 };
 
+const GetInfoDriver = async (
+  req: RequestMiddleware,
+  res: Response,
+  next: NextFunction
+) => {
+  const getidForm = req.params.id 
+
+  const condition :any ={
+    _id:getidForm ,
+    status: FormStatus.BOOKED,
+  }
+  
+  const getForm = await bookingFormModel.findOne(condition)
+  if(getForm){
+
+    const getIdDriver = getForm?.driverId
+    const getInfoDriver = await DriverModel.findOne({_id:getIdDriver})
+    res.send(getInfoDriver)
+  }
+  else{
+    res.send('Error not found form or not found Driver')
+  }
+
+ 
+}
+
 const getInfoUser = async (
   req: RequestMiddleware,
   res: Response,
@@ -211,22 +309,6 @@ const GetStatics = async (
   try {
     const userId = req.userId;
 
-    // const januaryData = await bookingFormModel.find({
-    //   userId: userId,
-    //   status: FormStatus.COMPLETE,
-    //   $or: [
-    //     {
-    //       end_time: {
-    //         $gte: new Date(1672531200000),
-    //       },
-    //     },
-    //     {
-    //       end_time: {
-    //         $lt: new Date(1675209600000),
-    //       },
-    //     },
-    //   ],
-    // });
     const now = new Date()
     const startOfJan = new Date(now.getFullYear(), 0, 1)
     const endOfJan = new Date(now.getFullYear(), 1, 1)
@@ -383,27 +465,7 @@ const GetStatics = async (
       NovemberData.length,
       DecemberData.length,
     ];
-    // const statics = (GetAllMonth: any) => {
-    //   return {
-    //     January: januaryData.length,
-    //     February: FebruaryData.length,
-    //     March: MarchData.length,
-    //     April: AprilData.length,
-    //     May: MayData.length,
-    //     June: JuneData.length,
-    //     July: JulyData.length,
-    //     August: AugustData.length,
-    //     September: SeptemberData.length,
-    //     October: OctoberData.length,
-    //     November: NovemberData.length,
-    //     December: DecemberData.length,
-    //   };
-    // };
-
-    // const GetStaticsMonth = GetAllMonth.map(statics);
-    // console.log(GetStaticsMonth)
-    // console.log(statics);
-
+   
     res.send(GetAllMonth
       //  total: AugustData.length ,
      );
@@ -422,4 +484,6 @@ export {
   GetBookedForm,
   getFormByDay,
   GetStatics,
+  getFormByDateCreateForm ,
+  GetInfoDriver
 };

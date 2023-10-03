@@ -13,8 +13,18 @@ import {
   UpdateDrivers,
   GetListFormHistory,
   getDriversIdForm,
-  CompleteForm,
+  UpdateFormComplete,
   getAllListDriver,
+  GetListFormApproved,
+  getTotalCar,
+  getTotalFormComplete,
+  // getKmForm,
+  GetListFormBooked,
+  GetListFormCancel,
+  GetListFormComplete,
+  getStaticDriver,
+  getBestDriver,
+  // StacticsDriver,
   
 } from "../controllers/operatorControllers";
 
@@ -35,6 +45,43 @@ OperatorRoute.get(
   getAllListDriver
 )
 
+OperatorRoute.get(
+  "/getStaticDriver",
+  CheckToken,
+  CheckRoleOperator,
+  getStaticDriver
+)
+
+OperatorRoute.get(
+  "/GetListFormBooked",
+  CheckToken,
+  CheckRoleOperator,
+  GetListFormBooked
+)
+
+
+OperatorRoute.get(
+  "/GetListFormCancel",
+  CheckToken,
+  CheckRoleOperator,
+  GetListFormCancel
+)
+
+OperatorRoute.get(
+  "/getBestDriver",
+  CheckToken,
+  CheckRoleOperator,
+  getBestDriver
+)
+
+OperatorRoute.get(
+  "/GetListFormComplete",
+  CheckToken,
+  CheckRoleOperator,
+  GetListFormComplete
+)
+
+
 
 OperatorRoute.delete(
   "/deleteDriver",
@@ -45,7 +92,7 @@ OperatorRoute.delete(
 
 
 
-OperatorRoute.get(
+OperatorRoute.post(
   "/getListDriversAndCarsReady",
   CheckToken,
   CheckRoleOperator,
@@ -61,7 +108,7 @@ OperatorRoute.put(
   AddCarsAndDriversForm
 );
 
-
+OperatorRoute.get("/getListFormHistory", CheckToken, CheckRoleOperator, GetListFormApproved);
 
 
 
@@ -77,10 +124,27 @@ OperatorRoute.put(
   "/updateStatusComplete/:id",
   CheckToken,
   CheckRoleOperator,
-  CompleteForm
+  UpdateFormComplete
 );
 
 // OperatorRoute.get("/getInfor", CheckToken, CheckRoleOperator, GetListFormHistory);
+
+OperatorRoute.put(
+  "/updateDrivers",
+  CheckToken,
+  CheckRoleOperator,
+  UpdateDrivers
+);
+
+
+
+// OperatorRoute.get(
+//   "/StacticsDriver",
+//   CheckToken,
+//   CheckRoleOperator,
+//   // StacticsDriver
+// );
+
 
 
 
@@ -90,4 +154,11 @@ OperatorRoute.put(
 
 OperatorRoute.get("/getDriversIdForm", CheckToken, CheckRoleOperator,getDriversIdForm );
 
+OperatorRoute.post("/getListFormApproved", CheckToken, CheckRoleOperator,GetListFormApproved );
+
+OperatorRoute.get("/getTotalCar", CheckToken, CheckRoleOperator,getTotalCar )
+
+OperatorRoute.get("/getTotalFormComplete", CheckToken, CheckRoleOperator,getTotalFormComplete )
+
+// OperatorRoute.get("/getKmForm", CheckToken, CheckRoleOperator,getKmForm )
 export default OperatorRoute;

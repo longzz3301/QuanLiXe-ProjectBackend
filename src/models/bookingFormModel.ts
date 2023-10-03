@@ -22,7 +22,8 @@ const formBookingSchema = new mongoose.Schema({
   create_at: Date ,
   codeForm : String , 
   calculateDistance:Number ,
-  calculateTime:Number
+  calculateTime:Number ,
+  cancelReason : String
 
 });
 

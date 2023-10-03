@@ -10,10 +10,7 @@ interface User {
   age: number;
   officeCode: string;
   role: string;
-  // resetLink : {
-  //   data:string ,
-  //   default: ''
-  // }
+  otp: string
 }
 
 mongoose.connect("mongodb://localhost:27017/bookingcarSYSTEM");
@@ -26,12 +23,13 @@ const userSchema = new mongoose.Schema({
   date_of_birth: Date,
   office: String,
   role: String,
-  passwordResetToken: { type: String },
-  passwordResetExpires: { type: Date }
+  // passwordResetToken: { type: String },
+  // passwordResetExpires: { type: Date } ,
   // resetLink : {
   //   data: String ,
   //   default:''
   // }
+  otp: String
 });
 
 const userModel = mongoose.model("user", userSchema);
